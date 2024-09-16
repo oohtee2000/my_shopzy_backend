@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "826181166568",
+    "project_id": "shopzy-d81d7",
+    "storage_bucket": "shopzy-d81d7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:826181166568:android:bbc9b5784596e73415b05d",
+        "android_client_info": {
+          "package_name": "com.example.shopzy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmjX2pBaJObjahu6crDtU3n-N1MUsJnDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:826181166568:android:31e2f688395843e315b05d",
+        "android_client_info": {
+          "package_name": "com.example.shopzy_ecommerce_backend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmjX2pBaJObjahu6crDtU3n-N1MUsJnDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

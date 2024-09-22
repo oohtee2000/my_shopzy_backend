@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'dart:convert';
 
 class Product extends Equatable {
-  final int id;
+  final int? id;
   final String name;
   final String category;
   final String description;
@@ -15,7 +15,7 @@ class Product extends Equatable {
   int quantity;
 
   Product({
-    required this.id,
+   this.id,
     required this.name,
     required this.category,
     required this.description,
@@ -65,7 +65,7 @@ class Product extends Equatable {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      'id': id, // Firestore can generate an id for you if you don't provide one
       'name': name,
       'category': category,
       'description': description,
@@ -77,11 +77,30 @@ class Product extends Equatable {
     };
   }
 
+
+  // factory Product.fromSnapshot(DocumentSnapshot snap) {
+  //   var data = snap.data() as Map<String, dynamic>;
+  //
+  //   return Product(
+  //     id: (data['id'] ).toInt() ?? 0,
+  //     name: data['name'] ?? 'Unknown',
+  //     category: data['category'] ?? 'Uncategorized',
+  //     description: data['description'] ?? 'No description',
+  //     imageUrl: data['imageUrl'] ?? '',
+  //     isRecommended: data['isRecommended'] ?? false,
+  //     isPopular: data['isPopular'] ?? false,
+  //     price: (data['price'] is num) ? (data['price'] as num).toDouble() : 0.0,
+  //     quantity: (data['quantity'] is num) ? (data['quantity'] as num).toInt() : 0, // Convert to int safely
+  //
+  //   );
+  // }
+
+
   factory Product.fromSnapshot(DocumentSnapshot snap) {
     var data = snap.data() as Map<String, dynamic>;
 
     return Product(
-      id: (data['id'] ).toInt() ?? 0,
+      id: (data['id'] as int?) ?? 0, // Change made here
       name: data['name'] ?? 'Unknown',
       category: data['category'] ?? 'Uncategorized',
       description: data['description'] ?? 'No description',
@@ -89,10 +108,10 @@ class Product extends Equatable {
       isRecommended: data['isRecommended'] ?? false,
       isPopular: data['isPopular'] ?? false,
       price: (data['price'] is num) ? (data['price'] as num).toDouble() : 0.0,
-      quantity: (data['quantity'] is num) ? (data['quantity'] as num).toInt() : 0, // Convert to int safely
-      
+      quantity: (data['quantity'] is num) ? (data['quantity'] as num).toInt() : 0, // Ensure it's an int or provide a default
     );
   }
+
 
 
 

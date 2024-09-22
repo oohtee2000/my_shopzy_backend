@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:shopzy_ecommerce_backend/screens/new_product_screen.dart';
-import 'package:shopzy_ecommerce_backend/models/product_model.dart';
-import 'package:shopzy_ecommerce_backend/controllers/product_controller.dart';
+
+import '/models/models.dart';
+import '/screens/screens.dart';
+import '/controllers/controllers.dart';
 
 class ProductsScreen extends StatelessWidget {
-  const ProductsScreen({Key? key}) : super(key: key);
+  ProductsScreen({Key? key}) : super(key: key);
+
+  final ProductController productController = Get.put(ProductController());
 
   @override
   Widget build(BuildContext context) {
-    // Ensure you put the controller inside the build method
-    final ProductController productController = Get.put(ProductController());
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Products'),
@@ -51,12 +52,11 @@ class ProductsScreen extends StatelessWidget {
             ),
             Expanded(
               child: Obx(
-                    () => ListView.builder(
+                () => ListView.builder(
                   itemCount: productController.products.length,
                   itemBuilder: (context, index) {
                     return SizedBox(
-                      height: 190,
-                      width: 190,
+                      height: 210,
                       child: ProductCard(
                         product: productController.products[index],
                         index: index,
@@ -65,7 +65,7 @@ class ProductsScreen extends StatelessWidget {
                   },
                 ),
               ),
-            ),
+            )
           ],
         ),
       ),
@@ -101,11 +101,11 @@ class ProductCard extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
+            const SizedBox(height: 10),
             Text(
               product.description,
               style: const TextStyle(
                 fontSize: 12,
-                fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 10),
@@ -136,15 +136,22 @@ class ProductCard extends StatelessWidget {
                             ),
                           ),
                           SizedBox(
-                            width: 160,
+                            width: 175,
                             child: Slider(
                               value: product.price,
                               min: 0,
                               max: 25,
+                              divisions: 10,
                               activeColor: Colors.black,
                               inactiveColor: Colors.black12,
-                              divisions: 10,
                               onChanged: (value) {
+                                productController.updateProductPrice(
+                                  index,
+                                  product,
+                                  value,
+                                );
+                              },
+                              onChangeEnd: (value) {
                                 productController.saveNewProductPrice(
                                     product, 'price', value);
                               },
@@ -176,13 +183,23 @@ class ProductCard extends StatelessWidget {
                             child: Slider(
                               value: product.quantity.toDouble(),
                               min: 0,
-                              max: 25,
+                              max: 100,
+                              divisions: 10,
                               activeColor: Colors.black,
                               inactiveColor: Colors.black12,
-                              divisions: 10,
                               onChanged: (value) {
+                                productController.updateProductQuantity(
+                                  index,
+                                  product,
+                                  value.toInt(),
+                                );
+                              },
+                              onChangeEnd: (value) {
                                 productController.saveNewProductQuantity(
-                                    product, 'quantity', value.toInt());
+                                  product,
+                                  'quantity',
+                                  value.toInt(),
+                                );
                               },
                             ),
                           ),
@@ -197,7 +214,7 @@ class ProductCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                ),
+                )
               ],
             ),
           ],

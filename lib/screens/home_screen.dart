@@ -1,47 +1,48 @@
-import 'package:fl_chart/fl_chart.dart'; // Ensure you're using fl_chart correctly
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart'; // For Date formatting
-import 'package:shopzy_ecommerce_backend/controllers/controllers.dart';
-import 'package:shopzy_ecommerce_backend/models/models.dart';
-import 'package:shopzy_ecommerce_backend/screens/products_screen.dart';
-import 'package:shopzy_ecommerce_backend/screens/screens.dart';
+import 'package:intl/intl.dart';
+import 'package:fl_chart/fl_chart.dart';
+import '/controllers/controllers.dart';
+import '/screens/screens.dart';
+import '/models/models.dart';
 
 class HomeScreen extends StatelessWidget {
-
   HomeScreen({Key? key}) : super(key: key);
 
-  final OrderStatsController orderStatsController = Get.put(OrderStatsController());
+  final OrderStatsController orderStatsController =
+      Get.put(OrderStatsController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Shopzy', style: TextStyle(color: Colors.white)),
+        title: const Text('Admin Panel'),
         backgroundColor: Colors.black,
       ),
       body: SizedBox(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Add the bar chart here
-            FutureBuilder<List<OrderStats>>(
-                future: orderStatsController.stats.value,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Container(
-                      height: 250,
-                      padding: const EdgeInsets.all(10),
-                      child: CustomBarChart(
-                        orderStats: snapshot.data!,
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text('${snapshot.error}');
-                  }
-
-                  return const Center(child: CircularProgressIndicator(color: Colors.black));
+            FutureBuilder(
+              future: orderStatsController.stats.value,
+              builder: (context, AsyncSnapshot<List<OrderStats>> snapshot) {
+                if (snapshot.hasData) {
+                  return Container(
+                    height: 250,
+                    padding: const EdgeInsets.all(10),
+                    child: CustomBarChart(
+                      orderStats: snapshot.data!,
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text("${snapshot.error}");
                 }
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.black,
+                  ),
+                );
+              },
             ),
             Container(
               width: double.infinity,
@@ -53,7 +54,7 @@ class HomeScreen extends StatelessWidget {
                 },
                 child: const Card(
                   child: Center(
-                    child: Text('Go to Products'),
+                    child: Text('Go To Products'),
                   ),
                 ),
               ),
@@ -64,11 +65,11 @@ class HomeScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: InkWell(
                 onTap: () {
-                  Get.to(() => OrderScreen());
+                  Get.to(() => OrdersScreen());
                 },
                 child: const Card(
                   child: Center(
-                    child: Text('Go to Orders'),
+                    child: Text('Go To Orders'),
                   ),
                 ),
               ),
@@ -87,7 +88,6 @@ class CustomBarChart extends StatelessWidget {
   }) : super(key: key);
 
   final List<OrderStats> orderStats;
-
   @override
   Widget build(BuildContext context) {
     return BarChart(
@@ -111,12 +111,13 @@ class CustomBarChart extends StatelessWidget {
               showTitles: true,
               getTitlesWidget: (value, meta) {
                 final index = value.toInt();
-                return Text(DateFormat.d().format(orderStats[index].dateTime)); // Display date
+                return Text(DateFormat.d()
+                    .format(orderStats[index].dateTime)); // Display date
               },
             ),
           ),
         ),
-        gridData: FlGridData(show: false),
+        gridData: const FlGridData(show: false),
         borderData: FlBorderData(show: false),
       ),
     );

@@ -1,18 +1,14 @@
-
-import 'package:get/get.dart';
 import 'package:shopzy_ecommerce_backend/models/models.dart';
 import 'package:shopzy_ecommerce_backend/services/database_service.dart';
+import 'package:get/get.dart';
 
-// import '../models/models.dart';
-
-
-class ProductController extends GetxController{
+class ProductController extends GetxController {
   final DatabaseService database = DatabaseService();
+
   var products = <Product>[].obs;
 
   @override
-
- onInit(){
+  void onInit() {
     products.bindStream(database.getProducts());
     super.onInit();
   }
@@ -25,42 +21,36 @@ class ProductController extends GetxController{
   get isPopular => newProduct['isPopular'];
 
   void updateProductPrice(
-      int index,
-      Product product,
-      double value){
-    product.price =  value;
+    int index,
+    Product product,
+    double value,
+  ) {
+    product.price = value;
     products[index] = product;
-
-
   }
 
-
   void saveNewProductPrice(
-      Product product,
-      String field,
-      double value,
-      ){
-        database.updateField(product, field, value);
-
+    Product product,
+    String field,
+    double value,
+  ) {
+    database.updateField(product, field, value);
   }
 
   void updateProductQuantity(
     int index,
     Product product,
-    int value
-      ) {
+    int value,
+  ) {
     product.quantity = value;
     products[index] = product;
   }
 
   void saveNewProductQuantity(
-      Product product,
-      String field,
-      int value,
-      ){
+    Product product,
+    String field,
+    int value,
+  ) {
     database.updateField(product, field, value);
-
   }
-
-
-  }
+}

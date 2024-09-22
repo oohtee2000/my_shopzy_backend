@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class OrderStats {
@@ -11,16 +11,18 @@ class OrderStats {
   OrderStats({
     required this.dateTime,
     required this.index,
-    required this.orders,  // Corrected from 'order' to 'orders'
-    Color? barColor,       // fl_chart Color type
-  }) : barColor = barColor ?? Colors.black;  // Use Colors.black by default
+    required this.orders, // Corrected from 'order' to 'orders'
+    Color? barColor, // fl_chart Color type
+  }) : barColor = barColor ?? Colors.black;
 
-  factory OrderStats.fromSnapshot(DocumentSnapshot snap, int index){
+  factory OrderStats.fromSnapshot(DocumentSnapshot snap, int index) {
     return OrderStats(
-        dateTime: snap['dateTime'].toDate(),
-        index: index,
-        orders: snap['orders']);
+      index: index,
+      dateTime: snap['dateTime'].toDate(),
+      orders: snap['orders'],
+    );
   }
+
   static final List<OrderStats> data = [
     OrderStats(
       dateTime: DateTime.now(),
@@ -28,54 +30,74 @@ class OrderStats {
       orders: 10,
     ),
     OrderStats(
-      dateTime: DateTime.now().subtract(Duration(days: 1)),
+      dateTime: DateTime.now(),
       index: 1,
-      orders: 15,
-    ),
-    OrderStats(
-      dateTime: DateTime.now().subtract(Duration(days: 2)),
-      index: 2,
       orders: 12,
     ),
     OrderStats(
-      dateTime: DateTime.now().subtract(Duration(days: 3)),
+      dateTime: DateTime.now(),
+      index: 2,
+      orders: 15,
+    ),
+    OrderStats(
+      dateTime: DateTime.now(),
       index: 3,
-      orders: 20,
+      orders: 12,
     ),
     OrderStats(
-      dateTime: DateTime.now().subtract(Duration(days: 4)),
+      dateTime: DateTime.now(),
       index: 4,
-      orders: 18,
-    ),
-    OrderStats(
-      dateTime: DateTime.now().subtract(Duration(days: 5)),
-      index: 5,
-      orders: 22,
-    ),
-    OrderStats(
-      dateTime: DateTime.now().subtract(Duration(days: 6)),
-      index: 6,
       orders: 9,
     ),
     OrderStats(
-      dateTime: DateTime.now().subtract(Duration(days: 7)),
-      index: 7,
-      orders: 14,
+      dateTime: DateTime.now(),
+      index: 5,
+      orders: 19,
     ),
     OrderStats(
-      dateTime: DateTime.now().subtract(Duration(days: 8)),
-      index: 8,
+      dateTime: DateTime.now(),
+      index: 6,
       orders: 16,
     ),
     OrderStats(
-      dateTime: DateTime.now().subtract(Duration(days: 9)),
+      dateTime: DateTime.now(),
+      index: 7,
+      orders: 19,
+    ),
+    OrderStats(
+      dateTime: DateTime.now(),
+      index: 8,
+      orders: 21,
+    ),
+    OrderStats(
+      dateTime: DateTime.now(),
       index: 9,
       orders: 19,
     ),
     OrderStats(
-      dateTime: DateTime.now().subtract(Duration(days: 10)),
+      dateTime: DateTime.now(),
       index: 10,
-      orders: 11,
+      orders: 27,
+    ),
+    OrderStats(
+      dateTime: DateTime.now(),
+      index: 11,
+      orders: 30,
+    ),
+    OrderStats(
+      dateTime: DateTime.now(),
+      index: 12,
+      orders: 19,
+    ),
+    OrderStats(
+      dateTime: DateTime.now(),
+      index: 13,
+      orders: 25,
+    ),
+    OrderStats(
+      dateTime: DateTime.now(),
+      index: 14,
+      orders: 29,
     ),
   ];
 }

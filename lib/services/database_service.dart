@@ -4,6 +4,15 @@ import 'package:shopzy_ecommerce_backend/models/models.dart' as shopzy; // Use a
 class DatabaseService {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
+
+  Future<void> deleteDocument(String collection, String docId) async {
+    try {
+      await _firebaseFirestore.collection(collection).doc(docId).delete();
+    } catch (e) {
+      throw Exception('Error deleting document: $e');
+    }
+  }
+
   Stream<List<shopzy.Order>> getOrders() { // Use alias here
     return _firebaseFirestore.collection('orders').snapshots().map((snapshot) {
       return snapshot.docs.map((doc) => shopzy.Order.fromSnapshot(doc)).toList(); // Use alias here

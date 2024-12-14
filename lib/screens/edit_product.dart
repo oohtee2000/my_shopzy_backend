@@ -3,12 +3,15 @@ import 'package:shopzy_ecommerce_backend/models/product_model.dart';
 import 'package:shopzy_ecommerce_backend/services/database_service.dart';
 import 'package:shopzy_ecommerce_backend/services/storage_service.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 
+import 'package:image_picker/image_picker.dart';
+import '/screens/screens.dart';
 import '/controllers/controllers.dart';
 
-class NewProductScreen extends StatelessWidget {
-  NewProductScreen({Key? key}) : super(key: key);
+class EditProductScreen extends StatelessWidget {
+  final Product product;
+
+  EditProductScreen({Key? key, required this.product}) : super(key: key);
 
   final ProductController productController = Get.find();
 
@@ -17,20 +20,36 @@ class NewProductScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Initialize the controller with the product values
+    productController.newProduct.value = {
+      'id': product.id,
+      'name': product.name,
+      'category': product.category,
+      'description': product.description,
+      'imageUrl': product.imageUrl,
+      // 'price': product.price,
+      // 'quantity': product.quantity,
+      'price': product.price?.toDouble(), // Convert to double
+      'quantity': product.quantity?.toDouble(), // Convert to double
+      'isRecommended': product.isRecommended,
+      'isPopular': product.isPopular,
+    };
+
     List<String> categories = [
       'Smoothies',
       'Soft Drinks',
       'Water',
     ];
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add a Product'),
+        title: const Text('Edit Product'),
         backgroundColor: Colors.black,
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Obx(
-          () => Column(
+              () => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
@@ -57,7 +76,7 @@ class NewProductScreen extends StatelessWidget {
                           if (_image != null) {
                             await storage.uploadImage(_image);
                             var imageUrl =
-                                await storage.getDownloadURL(_image.name);
+                            await storage.getDownloadURL(_image.name);
 
                             productController.newProduct.update(
                                 'imageUrl', (_) => imageUrl,
@@ -70,7 +89,7 @@ class NewProductScreen extends StatelessWidget {
                         ),
                       ),
                       const Text(
-                        'Add an Image',
+                        'Change Image',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -100,10 +119,11 @@ class NewProductScreen extends StatelessWidget {
                 productController,
               ),
               DropdownButtonFormField(
+                value: product.category,
                 iconSize: 20,
                 decoration: const InputDecoration(hintText: 'Product Category'),
                 items: categories.map(
-                  (value) {
+                      (value) {
                     return DropdownMenuItem(
                       value: value,
                       child: Text(value),
@@ -113,7 +133,7 @@ class NewProductScreen extends StatelessWidget {
                 onChanged: (value) {
                   productController.newProduct.update(
                     'category',
-                    (_) => value,
+                        (_) => value,
                     ifAbsent: () => value,
                   );
                 },
@@ -123,13 +143,15 @@ class NewProductScreen extends StatelessWidget {
                 'Price',
                 'price',
                 productController,
-                productController.price,
+                // productController.price,
+                productController.price?.toDouble(),
               ),
               _buildSlider(
                 'Quantity',
                 'quantity',
                 productController,
-                productController.quantity,
+                // productController.quantity,
+                productController.quantity?.toDouble(),
               ),
               const SizedBox(height: 10),
               _buildCheckbox(
@@ -146,70 +168,64 @@ class NewProductScreen extends StatelessWidget {
               ),
               Center(
                 child: ElevatedButton(
-                  // onPressed: () {
-                  //   print(productController.newProduct);
-                  //
-                  //   database.addProduct(
-                  //     Product(
-                  //       id: null,
-                  //       name: productController.newProduct['name'],
-                  //       category: productController.newProduct['category'],
-                  //       description: productController.newProduct['description'],
-                  //       imageUrl: productController.newProduct['imageUrl'],
-                  //       isRecommended: productController.newProduct['isRecommended'] ?? false,
-                  //       isPopular: productController.newProduct['isPopular'] ?? false,
-                  //       price: productController.newProduct['price'],
-                  //       quantity: productController.newProduct['quantity'].toInt(),
-                  //     ),
-                  //   );
-                  //   Navigator.pop(context);
-                  // },
-
-
-
                   onPressed: () async {
-                    print("Save button pressed");
-                    print(productController.newProduct);
+                    try{
+                      await database.updateField(product, 'name',
+                          productController.newProduct['name']);
+                      await database.updateField(product, 'category',
+                          productController.newProduct['category']);
+                      await database.updateField(product, 'description',
+                          productController.newProduct['description']);
+                      await database.updateField(product, 'imageUrl',
+                          productController.newProduct['imageUrl']);
+                      await database.updateField(product, 'price',
+                          productController.newProduct['price']);
+                      await database.updateField(product, 'quantity',
+                          productController.newProduct['quantity'].toInt());
+                      await database.updateField(product, 'isRecommended',
+                          productController.newProduct['isRecommended']);
+                      await database.updateField(product, 'isPopular',
+                          productController.newProduct['isPopular']);
 
-                    await database.addProduct(
-                      Product(
-                        id: null,
-                        name: productController.newProduct['name'],
-                        category: productController.newProduct['category'],
-                        description: productController.newProduct['description'],
-                        imageUrl: productController.newProduct['imageUrl'],
-                        isRecommended: productController.newProduct['isRecommended'] ?? false,
-                        isPopular: productController.newProduct['isPopular'] ?? false,
-                        price: productController.newProduct['price'],
-                        quantity: productController.newProduct['quantity'].toInt(),
-                      ),
-                    );
-                    Navigator.pop(context);
+                      //Show success message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Product saved successfully!'),
+                          backgroundColor: Colors.green,
+                          duration: Duration(milliseconds: 100),
+                        ),
+                      );
+
+                      // Navigate to product screen
+                      // Navigator.pop(context);
+                      // Navigator.pushReplacementNamed(context, '/product_screen');
+                      Get.to(() => ProductsScreen());
+                    }catch(error){
+                      // Handle any error
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error saving product: $error'),
+                          backgroundColor: Colors.red,
+                          duration: Duration(milliseconds: 200),
+                        ),
+                      );
+                    }
+
+
+
                   },
-
-
-
-
-
-
-
-
-
-
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
                   ),
                   child: const Text(
-                    'Save',
+                    'Save Changes',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-
-                ),
-
+              ),
             ],
           ),
         ),
@@ -218,11 +234,11 @@ class NewProductScreen extends StatelessWidget {
   }
 
   Row _buildCheckbox(
-    String title,
-    String name,
-    ProductController productController,
-    bool? controllerValue,
-  ) {
+      String title,
+      String name,
+      ProductController productController,
+      bool? controllerValue,
+      ) {
     return Row(
       children: [
         SizedBox(
@@ -236,13 +252,13 @@ class NewProductScreen extends StatelessWidget {
           ),
         ),
         Checkbox(
-          value: (controllerValue == null) ? false : controllerValue,
+          value: controllerValue ?? false,
           checkColor: Colors.black,
           activeColor: Colors.black12,
           onChanged: (value) {
             productController.newProduct.update(
               name,
-              (_) => value,
+                  (_) => value,
               ifAbsent: () => value,
             );
           },
@@ -252,11 +268,11 @@ class NewProductScreen extends StatelessWidget {
   }
 
   Row _buildSlider(
-    String title,
-    String name,
-    ProductController productController,
-    double? controllerValue,
-  ) {
+      String title,
+      String name,
+      ProductController productController,
+      double? controllerValue,
+      ) {
     return Row(
       children: [
         SizedBox(
@@ -271,16 +287,16 @@ class NewProductScreen extends StatelessWidget {
         ),
         Expanded(
           child: Slider(
-            value: (controllerValue == null) ? 0 : controllerValue,
+            value: controllerValue ?? 0,
             min: 0,
-            max: 25,
+            max: title == 'Quantity' ? 100 : 25,
             divisions: 10,
             activeColor: Colors.black,
             inactiveColor: Colors.black12,
             onChanged: (value) {
               productController.newProduct.update(
                 name,
-                (_) => value,
+                    (_) => value,
                 ifAbsent: () => value,
               );
             },
@@ -291,16 +307,17 @@ class NewProductScreen extends StatelessWidget {
   }
 
   TextFormField _buildTextFormField(
-    String hintText,
-    String name,
-    ProductController productController,
-  ) {
+      String hintText,
+      String name,
+      ProductController productController,
+      ) {
     return TextFormField(
+      initialValue: productController.newProduct[name],
       decoration: InputDecoration(hintText: hintText),
       onChanged: (value) {
         productController.newProduct.update(
           name,
-          (_) => value,
+              (_) => value,
           ifAbsent: () => value,
         );
       },
